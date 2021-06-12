@@ -1,4 +1,6 @@
 import blackjack as game
+import numpy as np
+
 
 # Parameters
 gamma = 0.9
@@ -31,31 +33,45 @@ def get_obs():
     dealer, player, reward, done = card_game.do_action(a)
     next_state = (player, card_game.total([dealer]))
     if(next_state[0] > 21):
-        next_state = (22,next_state[1])
+        next_state = (22, next_state[1])
     return state, a, reward, next_state, done
 
 
 def get_step_size(s, a):
-    num_visits[s][a] += 1
-    return 1/num_visits[s][a]
+    num_visits[s[0]][s[1]][a] += 1
+    return 1/num_visits[s[0]][s[1]][a]
 
 
 def run_td0():
     for state in states:
-        approx_v[state] = 0
-        num_visits[state] = {}
+        if(state[0] not in approx_v):
+            approx_v[state[0]] = {}
+        approx_v[state[0]][state[1]] = 0
+        if(state[0] not in num_visits):
+            num_visits[state[0]] = {}
+        num_visits[state[0]][state[1]] = {}
         for action in actions:
-            num_visits[state][action] = 0
+            num_visits[state[0]][state[1]][action] = 0
 
     for t in range(0, 10000):
         s, a, r, next_s, done = get_obs()
         step = get_step_size(s, a)
-        temporal_diff = r + gamma * approx_v[next_s] - approx_v[s]
-        approx_v[s] = approx_v[s] + step * temporal_diff
+        temporal_diff = r + gamma * \
+            approx_v[next_s[0]][next_s[1]] - approx_v[s[0]][s[1]]
+        approx_v[s[0]][s[1]] = approx_v[s[0]][s[1]] + step * temporal_diff
         if(done):
             card_game.reset()
-    for key in approx_v.keys():
-        print(f"{key} : {approx_v[key]}")
+    for player_sum in approx_v.keys():
+        array = np.array(approx_v[player_sum])
+        min = array.min()
+        if(min < 0):
+          array += min
+        sum = array.sum()
+        array /= sum
+        for host_card in approx_v[2].keys():
+          #try normalize minus values.
+          print(
+              f"{player_sum - host_card} : {approx_v[player_sum][host_card]}")
 
 
 run_td0()
