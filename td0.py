@@ -68,7 +68,7 @@ def run_td0():
           array += min
         sum = array.sum()
         array /= sum
-        for host_card in approx_v[2].keys():
+        for host_card in approx_v[4].keys():
           #try normalize minus values.
           print(
               f"{player_sum - host_card} : {approx_v[player_sum][host_card]}")
