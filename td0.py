@@ -62,7 +62,7 @@ def run_td0():
         if(done):
             card_game.reset()
     for player_sum in approx_v.keys():
-        array = np.array(approx_v[player_sum])
+        array = np.array(list(approx_v[player_sum].values()))
         min = array.min()
         if(min < 0):
           array += min
