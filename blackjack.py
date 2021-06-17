@@ -78,6 +78,11 @@ class CardGame:
             " for a total of " + str(self.total(player_hand)))
 
 
+  def bool_blackjack(self,dealer_hand, player_hand):
+      if self.total(player_hand) == 21 or self.total(dealer_hand) == 21:
+          return True
+
+
   def blackjack(self,dealer_hand, player_hand):
       if self.total(player_hand) == 21:
           self.print_results(dealer_hand, player_hand)
@@ -86,7 +91,7 @@ class CardGame:
       elif self.total(dealer_hand) == 21:
           self.print_results(dealer_hand, player_hand)
           print("Sorry, you lose. The dealer got a blackjack.\n")
-          return -1
+          return 0
       return 0
 
 
@@ -116,15 +121,19 @@ class CardGame:
           print("Congratulations. Your score is higher than the dealer. You win\n")
           return 1
       else:
-        return 0
+        return 1
 
 
   def start_game(self):
       #case when hand is > 21 at start
       self.dealer_hand = self.deal(self.deck)
       self.player_hand = self.deal(self.deck)
-      blackjack_result = self.blackjack(self.dealer_hand, self.player_hand)
-      return (self.dealer_hand[0], self.total(self.player_hand), blackjack_result, blackjack_result != 0)
+      is_blackjack = self.bool_blackjack(self.dealer_hand, self.player_hand)
+      if(is_blackjack):
+        blackjack_result = self.blackjack(self.dealer_hand, self.player_hand)
+        return (self.dealer_hand[0], self.total(self.player_hand), blackjack_result, True)
+      else:
+        return (self.dealer_hand[0], self.total(self.player_hand), 0, False)
 
 
   def do_action(self,action):
